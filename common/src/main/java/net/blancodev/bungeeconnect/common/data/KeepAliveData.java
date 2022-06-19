@@ -1,7 +1,6 @@
-package net.blancodev.bungeeconnect.protocol.data;
+package net.blancodev.bungeeconnect.common.data;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 @Getter
 public class KeepAliveData extends BaseData {

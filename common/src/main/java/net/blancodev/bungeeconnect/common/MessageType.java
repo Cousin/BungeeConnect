@@ -1,9 +1,9 @@
-package net.blancodev.bungeeconnect.protocol;
+package net.blancodev.bungeeconnect.common;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import net.blancodev.bungeeconnect.protocol.data.BootData;
-import net.blancodev.bungeeconnect.protocol.data.KeepAliveData;
+import net.blancodev.bungeeconnect.common.data.BootData;
+import net.blancodev.bungeeconnect.common.data.KeepAliveData;
 
 @Getter
 @RequiredArgsConstructor

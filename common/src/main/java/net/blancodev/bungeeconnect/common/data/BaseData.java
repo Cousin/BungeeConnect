@@ -1,4 +1,4 @@
-package net.blancodev.bungeeconnect.protocol.data;
+package net.blancodev.bungeeconnect.common.data;
 
 import lombok.Getter;
 

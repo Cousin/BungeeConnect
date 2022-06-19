@@ -1,4 +1,4 @@
-package net.blancodev.bungeeconnect.protocol;
+package net.blancodev.bungeeconnect.common;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
