@@ -1,4 +1,4 @@
-package net.blancodev.bungeeconnect.common.data;
+package net.blancodev.bungeeconnect.common.protocol;
 
 import lombok.Getter;
 
@@ -10,5 +10,4 @@ public class BaseData {
     public BaseData(long timestamp) {
         this.timestamp = timestamp;
     }
-
 }
