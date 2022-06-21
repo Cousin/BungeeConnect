@@ -7,7 +7,7 @@ public class BungeeConnect extends Plugin {
     @Override
     public void onEnable() {
 
-        
+
 
     }
 }
