@@ -1,6 +1,7 @@
 package net.blancodev.bungeeconnect.common;
 
 import com.google.gson.JsonSyntaxException;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.blancodev.bungeeconnect.common.data.ServerData;
 import net.blancodev.bungeeconnect.common.util.GsonHelper;
@@ -17,6 +18,7 @@ public abstract class ServerPoller extends Thread {
     private final JedisPool jedisPool;
     private final long refreshRateMs;
 
+    @Getter
     private final Map<String, ServerData> serverDataMap = new ConcurrentHashMap<>();
 
     @Override
