@@ -25,8 +25,7 @@ public abstract class ServerPoller extends Thread {
     public void run() {
         while (true) {
             try (Jedis jedis = jedisPool.getResource()) {
-
-                Set<String> keys = jedis.keys(BungeeConnectCommon.SERVER_DATA_KEY + "*");
+                final Set<String> keys = jedis.keys(BungeeConnectCommon.SERVER_DATA_KEY + "*");
                 for (String key : keys) {
                     String serverName = key.replace(BungeeConnectCommon.SERVER_DATA_KEY, "");
 
@@ -46,16 +45,14 @@ public abstract class ServerPoller extends Thread {
                        onServerExpire(key, serverDataMap.get(key));
                        return true;
                    }
-
                    return false;
                 });
-
             }
 
             try {
                 Thread.sleep(refreshRateMs);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            } catch (InterruptedException exception) {
+                exception.printStackTrace();
             }
         }
     }
