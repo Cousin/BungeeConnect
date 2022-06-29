@@ -14,6 +14,7 @@ public class BungeeConnect extends Plugin implements ConfigurableModule<BungeeCo
 
     private BungeeConnectConfig bungeeConnectConfig;
     private JedisPool jedisPool;
+    private BungeeServerPoller bungeeServerPoller;
 
     @Override
     public void onEnable() {
@@ -27,7 +28,8 @@ public class BungeeConnect extends Plugin implements ConfigurableModule<BungeeCo
 
         this.jedisPool = BungeeConnectCommon.createJedisPool(bungeeConnectConfig);
 
-        new BungeeServerPoller(getProxy(), jedisPool, bungeeConnectConfig.getPollRefreshRate()).start();
+        this.bungeeServerPoller = new BungeeServerPoller(getProxy(), jedisPool, bungeeConnectConfig.getPollRefreshRate());
+        bungeeServerPoller.start();
     }
 
     @Override

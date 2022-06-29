@@ -3,6 +3,7 @@ package net.blancodev.bungeeconnect.spigot;
 import io.netty.channel.ChannelFuture;
 import lombok.Getter;
 import net.blancodev.bungeeconnect.common.BungeeConnectCommon;
+import net.blancodev.bungeeconnect.common.ServerPoller;
 import net.blancodev.bungeeconnect.common.config.ConfigurableModule;
 import net.blancodev.bungeeconnect.common.data.ServerData;
 import net.blancodev.bungeeconnect.common.util.GsonHelper;
@@ -30,6 +31,8 @@ public final class SpigotConnect extends JavaPlugin implements ConfigurableModul
 
     private JedisPool jedisPool;
     private SpigotConnectConfig spigotConnectConfig;
+
+    private ServerPoller serverPoller;
 
     private String serverName;
     private String detectedHostname;
@@ -74,6 +77,18 @@ public final class SpigotConnect extends JavaPlugin implements ConfigurableModul
         }
 
         startPinging();
+
+        this.serverPoller = new ServerPoller(jedisPool, getSpigotConnectConfig().getRefreshRateMs()) {
+            @Override
+            public void onServerExpire(String s, ServerData serverData) {
+
+            }
+
+            @Override
+            public void onServerUpdate(ServerData serverData, ServerData serverData1) {
+
+            }
+        };
     }
 
     private void startPinging() {
