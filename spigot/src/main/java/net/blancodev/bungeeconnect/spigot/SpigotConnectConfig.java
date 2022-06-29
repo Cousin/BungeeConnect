@@ -10,7 +10,7 @@ public class SpigotConnectConfig implements RedisConnectionConfig {
     private String redisPassword = "password";
     private int redisPort = 6379;
 
-    private long refreshRateMs = 1000;
+    private long refreshRateMs = 1000L;
 
     private String serverName = "mc%uuid%";
     private String ip = "127.0.0.1";

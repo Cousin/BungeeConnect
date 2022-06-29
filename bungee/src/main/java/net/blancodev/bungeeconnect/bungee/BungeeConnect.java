@@ -20,8 +20,8 @@ public class BungeeConnect extends Plugin implements ConfigurableModule<BungeeCo
     public void onEnable() {
         try {
             this.bungeeConnectConfig = BungeeConnectCommon.loadConfig(this, BungeeConnectConfig.class);
-        } catch (IOException | InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
+        } catch (IOException | InstantiationException | IllegalAccessException exception) {
+            exception.printStackTrace();
             getProxy().stop();
             return;
         }
@@ -29,7 +29,7 @@ public class BungeeConnect extends Plugin implements ConfigurableModule<BungeeCo
         this.jedisPool = BungeeConnectCommon.createJedisPool(bungeeConnectConfig);
 
         this.bungeeServerPoller = new BungeeServerPoller(getProxy(), jedisPool, bungeeConnectConfig.getPollRefreshRate());
-        bungeeServerPoller.start();
+        this.bungeeServerPoller.start();
     }
 
     @Override

@@ -10,6 +10,6 @@ public class BungeeConnectConfig implements RedisConnectionConfig {
     private String redisPassword = "password";
     private int redisPort = 6379;
 
-    private long pollRefreshRate = 1000;
+    private long pollRefreshRate = 1000L;
 
 }

@@ -10,9 +10,7 @@ public final class GsonHelper {
     public static Gson PRETTY_GSON = baseBuilder().setPrettyPrinting().create();
 
     private static GsonBuilder baseBuilder() {
-        final GsonBuilder gsonBuilder = new GsonBuilder();
-
-        return gsonBuilder;
+        return new GsonBuilder(); // todo: register type adapters
     }
 
 }

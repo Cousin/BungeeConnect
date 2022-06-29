@@ -25,7 +25,7 @@ public class BungeeServerPoller extends ServerPoller {
 
     @Override
     public void onServerUpdate(ServerData oldData, ServerData newData) {
-        if (oldData == null || (!oldData.getIp().equals(newData.getIp()) || oldData.getPort() != newData.getPort())) {
+        if (!newData.equals(oldData)) {
             this.proxyServer.getServers().put(
                     newData.getServerName(),
                     this.proxyServer.constructServerInfo(

@@ -35,12 +35,12 @@ public class BungeeConnectCommon {
         return jedisPool;
     }
 
-    public static  <T> T loadConfig(ConfigurableModule<T> configurableModule, Class<T> clazz) throws IOException, InstantiationException, IllegalAccessException {
+    public static <T> T loadConfig(ConfigurableModule<T> configurableModule, Class<T> clazz) throws IOException, InstantiationException, IllegalAccessException {
         if (!configurableModule.getConfigurationFolder().exists()) {
             configurableModule.getConfigurationFolder().mkdir();
         }
 
-        T configObject;
+        final T configObject;
 
         final File configFile = new File(configurableModule.getConfigurationFolder(), "config.json");
         if (!configFile.exists()) {

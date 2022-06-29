@@ -161,7 +161,7 @@ public final class SpigotConnect extends JavaPlugin implements ConfigurableModul
         return commonPort;
     }
 
-    private  <T> T getPrivateField(Class<?> objectClass, Object object, String fieldName) throws Exception {
+    private <T> T getPrivateField(Class<?> objectClass, Object object, String fieldName) throws NoSuchFieldException, IllegalAccessException {
         Field field = objectClass.getDeclaredField(fieldName);
         field.setAccessible(true);
         return (T) field.get(object);
