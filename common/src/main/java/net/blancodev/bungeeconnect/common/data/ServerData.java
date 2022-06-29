@@ -2,7 +2,6 @@ package net.blancodev.bungeeconnect.common.data;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.util.Set;
 import java.util.UUID;

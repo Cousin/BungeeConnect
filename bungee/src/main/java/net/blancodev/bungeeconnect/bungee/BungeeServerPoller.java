@@ -5,7 +5,6 @@ import net.blancodev.bungeeconnect.common.data.ServerData;
 import net.md_5.bungee.api.ProxyServer;
 import redis.clients.jedis.JedisPool;
 
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.logging.Level;
 

@@ -60,7 +60,7 @@ public abstract class ServerPoller extends Thread {
         }
     }
 
-    public abstract void onServerExpire(String serverName, ServerData lastKnownData);
-    public abstract void onServerUpdate(ServerData oldData, ServerData newData);
+    protected abstract void onServerExpire(String serverName, ServerData lastKnownData);
+    protected abstract void onServerUpdate(ServerData oldData, ServerData newData);
 
 }
