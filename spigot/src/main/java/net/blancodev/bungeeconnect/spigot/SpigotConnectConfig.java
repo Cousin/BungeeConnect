@@ -8,7 +8,7 @@ public class SpigotConnectConfig implements RedisConnectionConfig {
 
     private String redisHost = "localhost";
     private String redisPassword = "password";
-    private int redisPort = 6719;
+    private int redisPort = 6379;
 
     private String serverName = "mc%uuid%";
     private String ip = "127.0.0.1";
