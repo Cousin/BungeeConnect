@@ -89,6 +89,7 @@ public final class SpigotConnect extends JavaPlugin implements ConfigurableModul
 
             }
         };
+        this.serverPoller.start();
     }
 
     private void startPinging() {
