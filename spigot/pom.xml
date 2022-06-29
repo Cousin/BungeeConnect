@@ -5,10 +5,11 @@
     <parent>
         <artifactId>bungeeconnect-parent</artifactId>
         <groupId>net.blancodev</groupId>
-        <version>1.0.1-SNAPSHOT</version>
+        <version>1.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
+    <version>1.0.1-SNAPSHOT</version>
     <artifactId>bungeeconnect-spigot</artifactId>
 
     <properties>
@@ -34,7 +35,7 @@
     <dependencies>
         <dependency>
             <groupId>net.blancodev</groupId>
-            <artifactId>common</artifactId>
+            <artifactId>bungeeconnect-common</artifactId>
             <version>1.0.1-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
