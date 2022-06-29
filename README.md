@@ -4,7 +4,7 @@ A Bungee and Spigot side plugin to easily and dynamically connect new Spigot ins
 BungeeCord can be frustrating having to manually update your proxy config.yml everytime you want to add a new server.
 With BungeeConnect, all you have to do is start up your Spigot server with the 'SpigotConnect' plugin and your Bungee proxy (with the 'BungeeConnect' plugin) will automatically detect this server and add it.
 
-Not only does BungeeConnect dynamically load your servers, it also polls them in Redis allow you the developer to query your servers from either the spigot or bungee side.
+Not only does BungeeConnect dynamically load your servers, it also polls them in Redis allowing you the developer to query your servers from either the spigot or bungee side.
 
 BungeeCord usage
 ```java
