@@ -71,8 +71,8 @@ public final class SpigotConnect extends JavaPlugin implements ConfigurableModul
                     getSpigotConnectConfig().isRestricted(),
                     getServer().getOnlinePlayers().size(),
                     getServer().getMaxPlayers(),
-                    getServer().isWhitelistEnforced(),
-                    getServer().isWhitelistEnforced() ? getServer().getWhitelistedPlayers().stream().map(OfflinePlayer::getUniqueId).collect(Collectors.toSet()) : Collections.emptySet()
+                    getServer().hasWhitelist(),
+                    getServer().hasWhitelist() ? getServer().getWhitelistedPlayers().stream().map(OfflinePlayer::getUniqueId).collect(Collectors.toSet()) : Collections.emptySet()
                 );
 
                 try (Jedis jedis = jedisPool.getResource()) {
