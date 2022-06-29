@@ -12,9 +12,14 @@ import java.util.UUID;
 public class ServerData {
 
     private String hostname;
+    private String ip;
     private int port;
 
     private String serverName;
+
+    private String motd;
+
+    private boolean restricted;
 
     private int players;
     private int maxPlayers;

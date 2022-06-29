@@ -5,6 +5,8 @@ import net.blancodev.bungeeconnect.common.data.ServerData;
 import net.md_5.bungee.api.ProxyServer;
 import redis.clients.jedis.JedisPool;
 
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.util.logging.Level;
 
 public class BungeeServerPoller extends ServerPoller {
@@ -24,6 +26,16 @@ public class BungeeServerPoller extends ServerPoller {
 
     @Override
     public void onServerUpdate(ServerData oldData, ServerData newData) {
-
+        if (oldData == null || (!oldData.getIp().equals(newData.getIp()) || oldData.getPort() != newData.getPort())) {
+            this.proxyServer.getServers().put(
+                    newData.getServerName(),
+                    this.proxyServer.constructServerInfo(
+                            newData.getServerName(),
+                            InetSocketAddress.createUnresolved(newData.getIp(), newData.getPort()),
+                            newData.getMotd(),
+                            newData.isRestricted()
+                    )
+            );
+        }
     }
 }

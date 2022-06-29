@@ -64,8 +64,11 @@ public final class SpigotConnect extends JavaPlugin implements ConfigurableModul
             public void run() {
                 final ServerData serverData = new ServerData(
                     detectedHostname,
+                    getSpigotConnectConfig().getIp(),
                     getServer().getPort(),
                     getServerName(),
+                    getSpigotConnectConfig().getMotd(),
+                    getSpigotConnectConfig().isRestricted(),
                     getServer().getOnlinePlayers().size(),
                     getServer().getMaxPlayers(),
                     getServer().isWhitelistEnforced(),
