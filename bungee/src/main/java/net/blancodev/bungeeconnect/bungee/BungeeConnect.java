@@ -1,16 +1,37 @@
 package net.blancodev.bungeeconnect.bungee;
 
+import lombok.Getter;
+import net.blancodev.bungeeconnect.common.BungeeConnectCommon;
+import net.blancodev.bungeeconnect.common.config.ConfigurableModule;
 import net.md_5.bungee.api.plugin.Plugin;
+import redis.clients.jedis.JedisPool;
 
-import java.net.InetSocketAddress;
+import java.io.File;
+import java.io.IOException;
 
-public class BungeeConnect extends Plugin {
+@Getter
+public class BungeeConnect extends Plugin implements ConfigurableModule<BungeeConnectConfig> {
+
+    private BungeeConnectConfig bungeeConnectConfig;
+    private JedisPool jedisPool;
 
     @Override
     public void onEnable() {
-        getProxy().getServers().put("tester", getProxy().constructServerInfo(
-            "tester", InetSocketAddress.createUnresolved("127.0.0.1", 25568), "motd", false
-        ));
+        try {
+            this.bungeeConnectConfig = BungeeConnectCommon.loadConfig(this, BungeeConnectConfig.class);
+        } catch (IOException | InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();
+            getProxy().stop();
+            return;
+        }
+
+        this.jedisPool = BungeeConnectCommon.createJedisPool(bungeeConnectConfig);
+
+        new BungeeServerPoller(getProxy(), jedisPool, bungeeConnectConfig.getPollRefreshRate()).start();
     }
 
+    @Override
+    public File getConfigurationFolder() {
+        return getDataFolder();
+    }
 }

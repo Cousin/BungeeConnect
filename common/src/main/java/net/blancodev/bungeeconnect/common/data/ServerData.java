@@ -1,10 +1,14 @@
 package net.blancodev.bungeeconnect.common.data;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Set;
+import java.util.UUID;
+
 @Getter
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class ServerData {
 
     private String hostname;
@@ -14,5 +18,8 @@ public class ServerData {
 
     private int players;
     private int maxPlayers;
+
+    private boolean whitelisted;
+    private Set<UUID> whitelistedUuids;
 
 }

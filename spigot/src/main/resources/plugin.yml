@@ -1,0 +1,4 @@
+main: net.blancodev.bungeeconnect.spigot.SpigotConnect
+version: 1.0
+name: SpigotConnect
+author: Executive
