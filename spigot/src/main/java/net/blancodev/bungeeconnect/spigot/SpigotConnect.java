@@ -1,11 +1,13 @@
 package net.blancodev.bungeeconnect.spigot;
 
+import io.netty.channel.ChannelFuture;
 import lombok.Getter;
 import net.blancodev.bungeeconnect.common.BungeeConnectCommon;
 import net.blancodev.bungeeconnect.common.config.ConfigurableModule;
 import net.blancodev.bungeeconnect.common.data.ServerData;
 import net.blancodev.bungeeconnect.common.util.GsonHelper;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.Server;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import redis.clients.jedis.Jedis;
@@ -13,9 +15,13 @@ import redis.clients.jedis.JedisPool;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -28,9 +34,12 @@ public final class SpigotConnect extends JavaPlugin implements ConfigurableModul
     private String serverName;
     private String detectedHostname;
 
+    private Protocol protocol;
+
+    private int port;
+
     @Override
     public void onEnable() {
-
         try {
             this.spigotConnectConfig = BungeeConnectCommon.loadConfig(this, SpigotConnectConfig.class);
         } catch (IOException | InstantiationException | IllegalAccessException e) {
@@ -54,8 +63,17 @@ public final class SpigotConnect extends JavaPlugin implements ConfigurableModul
                 .replace("%uuid%", UUID.randomUUID().toString().split("-")[0])
                 .replace("%hostname%", detectedHostname);
 
-        startPinging();
+        this.protocol = detectProtocol();
 
+        try {
+            this.port = injectAndFindPort(getServer());
+        } catch (Exception e) {
+            e.printStackTrace();
+            getServer().shutdown();
+            return;
+        }
+
+        startPinging();
     }
 
     private void startPinging() {
@@ -65,7 +83,7 @@ public final class SpigotConnect extends JavaPlugin implements ConfigurableModul
                 final ServerData serverData = new ServerData(
                     detectedHostname,
                     getSpigotConnectConfig().getIp(),
-                    getServer().getPort(),
+                    port,
                     getServerName(),
                     getSpigotConnectConfig().getMotd(),
                     getSpigotConnectConfig().isRestricted(),
@@ -87,4 +105,50 @@ public final class SpigotConnect extends JavaPlugin implements ConfigurableModul
     public File getConfigurationFolder() {
         return getDataFolder();
     }
+
+    private Protocol detectProtocol() {
+        String version = super.getServer().getClass().getPackage().getName().replace(".",  ",").split(",")[3];
+        for (Protocol protocol : Protocol.values()) {
+            if (protocol.name().equals(version.toUpperCase())) {
+                getLogger().info("Detected protocol version as " + protocol.name());
+                return protocol;
+            }
+        }
+
+        return null;
+    }
+
+    /*
+        Method for finding the true port of the server, useful for when utilizing port 0
+        Derived from Lilypads Bukkit-Connect
+     */
+    private int injectAndFindPort(Server server) throws Exception {
+        Method serverGetHandle = server.getClass().getDeclaredMethod("getServer");
+        Object minecraftServer = serverGetHandle.invoke(server);
+        // Get Server Connection
+        Method serverConnectionMethod = null;
+        for(Method method : minecraftServer.getClass().getSuperclass().getDeclaredMethods()) {
+            if(!method.getReturnType().getSimpleName().equals("ServerConnection")) {
+                continue;
+            }
+            serverConnectionMethod = method;
+            break;
+        }
+        Object serverConnection = serverConnectionMethod.invoke(minecraftServer);
+        // Get ChannelFuture List
+        List<ChannelFuture> channelFutureList = getPrivateField(serverConnection.getClass(), serverConnection, protocol.getChannelFuturesField());
+        // Iterate ChannelFutures
+        int commonPort = 0;
+        for(ChannelFuture channelFuture : channelFutureList) {
+            commonPort = ((InetSocketAddress) channelFuture.channel().localAddress()).getPort();
+        }
+        return commonPort;
+    }
+
+    private  <T> T getPrivateField(Class<?> objectClass, Object object, String fieldName) throws Exception {
+        Field field = objectClass.getDeclaredField(fieldName);
+        field.setAccessible(true);
+        return (T) field.get(object);
+    }
+
 }
