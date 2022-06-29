@@ -36,6 +36,7 @@ public class BungeeServerPoller extends ServerPoller {
                             newData.isRestricted()
                     )
             );
+            proxyServer.getLogger().log(Level.INFO, "Server " + newData + " has been updated");
         }
     }
 }
