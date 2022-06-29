@@ -1,0 +1,4 @@
+main: net.blancodev.bungeeconnect.bungee.BungeeConnect
+version: 1.0
+name: BungeeConnect
+author: Executive
