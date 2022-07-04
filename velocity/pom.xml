@@ -5,10 +5,11 @@
     <parent>
         <artifactId>bungeeconnect-parent</artifactId>
         <groupId>net.blancodev</groupId>
-        <version>1.0.1-SNAPSHOT</version>
+        <version>1.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
+    <version>1.0.1-SNAPSHOT</version>
     <artifactId>bungeeconnect-velocity</artifactId>
 
     <properties>
