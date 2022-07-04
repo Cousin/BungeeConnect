@@ -12,6 +12,7 @@
         <module>common</module>
         <module>bungee</module>
         <module>spigot</module>
+        <module>velocity</module>
     </modules>
 
     <properties>
@@ -34,6 +35,10 @@
         <repository>
             <id>bungeecord-repo</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </repository>
+        <repository>
+            <id>papermc</id>
+            <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
     </repositories>
 
@@ -69,6 +74,11 @@
                 <artifactId>bungeecord-api</artifactId>
                 <version>1.19-R0.1-SNAPSHOT</version>
                 <type>jar</type>
+            </dependency>
+            <dependency>
+                <groupId>com.velocitypowered</groupId>
+                <artifactId>velocity-api</artifactId>
+                <version>3.0.1</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
