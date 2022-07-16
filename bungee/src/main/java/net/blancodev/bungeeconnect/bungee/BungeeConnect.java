@@ -16,9 +16,8 @@ public class BungeeConnect extends Plugin implements ConfigurableModule<BungeeCo
 
     private BungeeConnectConfig bungeeConnectConfig;
     private JedisPool jedisPool;
-    private BungeeServerHandler bungeeServerHandler;
 
-    private ServerDataPubSub serverDataPubSub;
+    private final ServerDataPubSub serverDataPubSub = BungeeConnectCommon.getServerDataPubSub();
 
     @Override
     public void onEnable() {
@@ -34,12 +33,12 @@ public class BungeeConnect extends Plugin implements ConfigurableModule<BungeeCo
 
         getProxy().getScheduler().runAsync(this, () -> {
             try (Jedis jedis = this.jedisPool.getResource()) {
-                this.serverDataPubSub = BungeeConnectCommon.initPubSub(jedis);
+                BungeeConnectCommon.initPubSub(jedis);
             }
         });
 
-        this.serverDataPubSub.getServerDataHandlers().clear(); // clear basic handler
-        this.serverDataPubSub.getServerDataHandlers().add(new BungeeServerHandler(this));
+        BungeeConnectCommon.getServerDataPubSub().getServerDataHandlers().clear(); // clear basic handler
+        BungeeConnectCommon.getServerDataPubSub().getServerDataHandlers().add(new BungeeServerHandler(this));
     }
 
     @Override

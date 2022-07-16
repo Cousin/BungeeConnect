@@ -17,11 +17,10 @@ public class BungeeConnectCommon {
     public static final String PUBSUB_CHANNEL = "bungeeConnectServerData";
 
     @Getter
-    private static ServerDataPubSub serverDataPubSub;
+    private static final ServerDataPubSub serverDataPubSub = new ServerDataPubSub();
 
-    public static ServerDataPubSub initPubSub(Jedis jedis) {
-        jedis.subscribe(serverDataPubSub = new ServerDataPubSub(), PUBSUB_CHANNEL);
-        return serverDataPubSub;
+    public static void initPubSub(Jedis jedis) {
+        jedis.subscribe(serverDataPubSub, PUBSUB_CHANNEL);
     }
 
     public static JedisPool createJedisPool(RedisConnectionConfig coreConfig) {

@@ -37,7 +37,7 @@ public final class SpigotConnect extends JavaPlugin implements ConfigurableModul
 
     private Protocol protocol;
 
-    private ServerDataPubSub serverDataPubSub;
+    private final ServerDataPubSub serverDataPubSub = BungeeConnectCommon.getServerDataPubSub();
 
     private int port;
 
@@ -80,7 +80,7 @@ public final class SpigotConnect extends JavaPlugin implements ConfigurableModul
             @Override
             public void run() {
                 try (Jedis jedis = jedisPool.getResource()) {
-                    serverDataPubSub = BungeeConnectCommon.initPubSub(jedis);
+                    BungeeConnectCommon.initPubSub(jedis);
                 }
             }
         }.runTaskAsynchronously(this);
@@ -109,7 +109,7 @@ public final class SpigotConnect extends JavaPlugin implements ConfigurableModul
                     jedis.publish(BungeeConnectCommon.PUBSUB_CHANNEL, GsonHelper.GSON.toJson(serverData));
                 }
             }
-        }.runTaskTimer(this, 0, 20);
+        }.runTaskTimerAsynchronously(this, 0, 20);
     }
 
     @Override
