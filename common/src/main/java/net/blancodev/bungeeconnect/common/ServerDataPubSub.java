@@ -2,6 +2,7 @@ package net.blancodev.bungeeconnect.common;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.RemovalListener;
 import com.github.benmanes.caffeine.cache.Scheduler;
 import lombok.Getter;
 import net.blancodev.bungeeconnect.common.data.ServerData;
@@ -10,15 +11,10 @@ import redis.clients.jedis.JedisPubSub;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 public class ServerDataPubSub extends JedisPubSub {
-
-    @Getter
-    private final Map<String, ServerData> serverDataMap = new ConcurrentHashMap<>();
 
     @Getter
     private final Set<ServerDataHandler> serverDataHandlers = new HashSet<>(List.of(new ServerDataHandler() {
@@ -36,8 +32,12 @@ public class ServerDataPubSub extends JedisPubSub {
     @Getter
     private final Cache<String, ServerData> serverDataCache = Caffeine.newBuilder()
             .scheduler(Scheduler.systemScheduler())
-            .expireAfterWrite(30, TimeUnit.SECONDS)
-            .evictionListener((k, v, cause) -> serverDataHandlers.forEach(h -> h.onServerExpire((String) k, (ServerData) v)))
+            .expireAfterWrite(5, TimeUnit.SECONDS)
+            .removalListener((RemovalListener<String, ServerData>) (k, v, cause) -> {
+                if (cause.wasEvicted()) {
+                    serverDataHandlers.forEach(handler -> handler.onServerExpire(k, v));
+                }
+            })
             .build();
 
     @Override
