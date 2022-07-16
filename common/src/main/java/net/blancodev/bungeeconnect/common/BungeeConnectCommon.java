@@ -14,11 +14,13 @@ import java.nio.file.Files;
 
 public class BungeeConnectCommon {
 
+    public static final String PUBSUB_CHANNEL = "bungeeConnectServerData";
+
     @Getter
     private static ServerDataPubSub serverDataPubSub;
 
     public static ServerDataPubSub initPubSub(Jedis jedis) {
-        jedis.subscribe(serverDataPubSub = new ServerDataPubSub(), "bungeeConnectServerData");
+        jedis.subscribe(serverDataPubSub = new ServerDataPubSub(), PUBSUB_CHANNEL);
         return serverDataPubSub;
     }
 

@@ -3,7 +3,7 @@ package net.blancodev.bungeeconnect.spigot;
 import io.netty.channel.ChannelFuture;
 import lombok.Getter;
 import net.blancodev.bungeeconnect.common.BungeeConnectCommon;
-import net.blancodev.bungeeconnect.common.ServerPoller;
+import net.blancodev.bungeeconnect.common.ServerDataPubSub;
 import net.blancodev.bungeeconnect.common.config.ConfigurableModule;
 import net.blancodev.bungeeconnect.common.data.ServerData;
 import net.blancodev.bungeeconnect.common.util.GsonHelper;
@@ -32,12 +32,12 @@ public final class SpigotConnect extends JavaPlugin implements ConfigurableModul
     private JedisPool jedisPool;
     private SpigotConnectConfig spigotConnectConfig;
 
-    private ServerPoller serverPoller;
-
     private String serverName;
     private String detectedHostname;
 
     private Protocol protocol;
+
+    private ServerDataPubSub serverDataPubSub;
 
     private int port;
 
@@ -76,20 +76,11 @@ public final class SpigotConnect extends JavaPlugin implements ConfigurableModul
             return;
         }
 
+        try (Jedis jedis = jedisPool.getResource()) {
+            this.serverDataPubSub = BungeeConnectCommon.initPubSub(jedis);
+        }
+
         startPinging();
-
-        this.serverPoller = new ServerPoller(jedisPool, getSpigotConnectConfig().getRefreshRateMs()) {
-            @Override
-            public void onServerExpire(String s, ServerData serverData) {
-
-            }
-
-            @Override
-            public void onServerUpdate(ServerData serverData, ServerData serverData1) {
-
-            }
-        };
-        this.serverPoller.start();
     }
 
     private void startPinging() {
@@ -109,11 +100,8 @@ public final class SpigotConnect extends JavaPlugin implements ConfigurableModul
                     getServer().hasWhitelist() ? getServer().getWhitelistedPlayers().stream().map(OfflinePlayer::getUniqueId).collect(Collectors.toSet()) : Collections.emptySet()
                 );
 
-
-
                 try (Jedis jedis = jedisPool.getResource()) {
-                    jedis.set(BungeeConnectCommon.SERVER_DATA_KEY + getServerName(), GsonHelper.GSON.toJson(serverData));
-                    jedis.expire(BungeeConnectCommon.SERVER_DATA_KEY + getServerName(), 5);
+                    jedis.publish(BungeeConnectCommon.PUBSUB_CHANNEL, GsonHelper.GSON.toJson(serverData));
                 }
             }
         }.runTaskTimer(this, 0, 20);
