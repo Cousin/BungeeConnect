@@ -60,7 +60,6 @@ public class VelocityConnect implements ConfigurableModule<VelocityConnectConfig
             }
         }).schedule();
 
-        BungeeConnectCommon.getServerDataPubSub().getServerDataHandlers().clear();
         BungeeConnectCommon.getServerDataPubSub().getServerDataHandlers().add(new VelocityServerHandler(this, server));
     }
 

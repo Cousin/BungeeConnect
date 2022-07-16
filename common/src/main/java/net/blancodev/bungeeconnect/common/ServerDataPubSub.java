@@ -17,17 +17,7 @@ import java.util.concurrent.TimeUnit;
 public class ServerDataPubSub extends JedisPubSub {
 
     @Getter
-    private final Set<ServerDataHandler> serverDataHandlers = new HashSet<>(List.of(new ServerDataHandler() {
-        @Override
-        public void onServerUpdate(ServerData oldData, ServerData newData) {
-
-        }
-
-        @Override
-        public void onServerExpire(String serverName, ServerData lastKnownData) {
-
-        }
-    }));
+    private final Set<ServerDataHandler> serverDataHandlers = new HashSet<>();
 
     @Getter
     private final Cache<String, ServerData> serverDataCache = Caffeine.newBuilder()

@@ -37,7 +37,6 @@ public class BungeeConnect extends Plugin implements ConfigurableModule<BungeeCo
             }
         });
 
-        BungeeConnectCommon.getServerDataPubSub().getServerDataHandlers().clear(); // clear basic handler
         BungeeConnectCommon.getServerDataPubSub().getServerDataHandlers().add(new BungeeServerHandler(this));
     }
 
