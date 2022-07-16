@@ -53,11 +53,13 @@ public class VelocityConnect implements ConfigurableModule<VelocityConnectConfig
 
     @Subscribe
     public void onProxyInit(ProxyInitializeEvent event) {
-        try (Jedis jedis = jedisPool.getResource()) {
-            this.serverDataPubSub = BungeeConnectCommon.initPubSub(jedis);
-            this.serverDataPubSub.getServerDataHandlers().clear();
-            this.serverDataPubSub.getServerDataHandlers().add(new VelocityServerHandler(this, server));
-        }
+        getServer().getScheduler().buildTask(this, () -> {
+            try (Jedis jedis = jedisPool.getResource()) {
+                this.serverDataPubSub = BungeeConnectCommon.initPubSub(jedis);
+                this.serverDataPubSub.getServerDataHandlers().clear();
+                this.serverDataPubSub.getServerDataHandlers().add(new VelocityServerHandler(this, server));
+            }
+        }).schedule();
     }
 
     @Override

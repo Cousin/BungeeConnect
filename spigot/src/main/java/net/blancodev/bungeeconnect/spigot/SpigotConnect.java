@@ -76,9 +76,14 @@ public final class SpigotConnect extends JavaPlugin implements ConfigurableModul
             return;
         }
 
-        try (Jedis jedis = jedisPool.getResource()) {
-            this.serverDataPubSub = BungeeConnectCommon.initPubSub(jedis);
-        }
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                try (Jedis jedis = jedisPool.getResource()) {
+                    serverDataPubSub = BungeeConnectCommon.initPubSub(jedis);
+                }
+            }
+        }.runTaskAsynchronously(this);
 
         startPinging();
     }
