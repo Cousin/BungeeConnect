@@ -3,6 +3,7 @@ package net.blancodev.bungeeconnect.common;
 import lombok.Getter;
 import net.blancodev.bungeeconnect.common.config.ConfigurableModule;
 import net.blancodev.bungeeconnect.common.config.RedisConnectionConfig;
+import net.blancodev.bungeeconnect.common.data.PlayerData;
 import net.blancodev.bungeeconnect.common.util.GsonHelper;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -11,16 +12,36 @@ import redis.clients.jedis.JedisPoolConfig;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.UUID;
 
 public class BungeeConnectCommon {
 
     public static final String PUBSUB_CHANNEL = "bungeeConnectServerData";
+    public static final String PLAYERDATA_KEY = "bungeeConnectPlayerData.";
 
     @Getter
     private static final ServerDataPubSub serverDataPubSub = new ServerDataPubSub();
 
     public static void initPubSub(Jedis jedis) {
         jedis.subscribe(serverDataPubSub, PUBSUB_CHANNEL);
+    }
+
+    public static <Data extends PlayerData> Data getPlayerData(Jedis jedis, UUID uuid, Class<Data> clazz) {
+        String json = jedis.get(PLAYERDATA_KEY + uuid);
+        if (json == null) {
+            return null;
+        }
+
+        return GsonHelper.GSON.fromJson(json, clazz);
+    }
+
+    public static <Data extends PlayerData> Data getPlayerData(Jedis jedis, String username, Class<Data> clazz) {
+        String json = jedis.get(PLAYERDATA_KEY + username.toLowerCase());
+        if (json == null) {
+            return null;
+        }
+
+        return GsonHelper.GSON.fromJson(json, clazz);
     }
 
     public static JedisPool createJedisPool(RedisConnectionConfig coreConfig) {

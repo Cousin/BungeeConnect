@@ -2,13 +2,18 @@ package net.blancodev.bungeeconnect.spigot;
 
 import io.netty.channel.ChannelFuture;
 import lombok.Getter;
+import lombok.Setter;
 import net.blancodev.bungeeconnect.common.BungeeConnectCommon;
 import net.blancodev.bungeeconnect.common.ServerDataPubSub;
 import net.blancodev.bungeeconnect.common.config.ConfigurableModule;
+import net.blancodev.bungeeconnect.common.data.PlayerData;
 import net.blancodev.bungeeconnect.common.data.ServerData;
 import net.blancodev.bungeeconnect.common.util.GsonHelper;
+import net.blancodev.bungeeconnect.spigot.playerdata.PlayerDataCreator;
+import net.blancodev.bungeeconnect.spigot.playerdata.SpigotPlayerDataCreator;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import redis.clients.jedis.Jedis;
@@ -37,9 +42,12 @@ public final class SpigotConnect extends JavaPlugin implements ConfigurableModul
 
     private Protocol protocol;
 
-    private final ServerDataPubSub serverDataPubSub = BungeeConnectCommon.getServerDataPubSub();
-
     private int port;
+
+    @Setter
+    private PlayerDataCreator playerDataCreator = new SpigotPlayerDataCreator();
+
+    private final ServerDataPubSub serverDataPubSub = BungeeConnectCommon.getServerDataPubSub();
 
     @Override
     public void onEnable() {
@@ -107,6 +115,19 @@ public final class SpigotConnect extends JavaPlugin implements ConfigurableModul
 
                 try (Jedis jedis = jedisPool.getResource()) {
                     jedis.publish(BungeeConnectCommon.PUBSUB_CHANNEL, GsonHelper.GSON.toJson(serverData));
+
+                    for (Player online : getServer().getOnlinePlayers()) {
+                        final String uuidKey = BungeeConnectCommon.PLAYERDATA_KEY + online.getUniqueId();
+                        final String nameKey = BungeeConnectCommon.PLAYERDATA_KEY + online.getName().toLowerCase();
+
+                        final PlayerData playerData = playerDataCreator.createData(playerDataCreator.createPlayer(online));
+                        final String json = GsonHelper.GSON.toJson(playerData);
+
+                        jedis.set(uuidKey, json);
+                        jedis.set(nameKey, json);
+                        jedis.expire(uuidKey, 5);
+                        jedis.expire(nameKey, 5);
+                    }
                 }
             }
         }.runTaskTimerAsynchronously(this, 0, 20);
