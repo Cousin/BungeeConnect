@@ -20,11 +20,6 @@ public class BungeeServerHandler implements ServerDataHandler {
     }
 
     @Override
-    public Map<String, ServerData> getServerData() {
-        return plugin.getServerDataPubSub().getServerDataMap();
-    }
-
-    @Override
     public void onServerUpdate(ServerData oldData, ServerData newData) {
         if (!newData.equals(oldData)) {
             this.plugin.getProxy().getServers().put(

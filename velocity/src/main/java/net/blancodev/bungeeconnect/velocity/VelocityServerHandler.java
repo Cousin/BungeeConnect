@@ -3,21 +3,19 @@ package net.blancodev.bungeeconnect.velocity;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.api.proxy.server.ServerInfo;
-import net.blancodev.bungeeconnect.common.ServerPoller;
+import net.blancodev.bungeeconnect.common.ServerDataHandler;
 import net.blancodev.bungeeconnect.common.data.ServerData;
-import redis.clients.jedis.JedisPool;
 
 import java.net.InetSocketAddress;
 import java.util.Optional;
 import java.util.logging.Level;
 
-public class VelocityServerPoller extends ServerPoller {
+public class VelocityServerHandler implements ServerDataHandler {
 
     private final VelocityConnect plugin;
     private final ProxyServer proxyServer;
 
-    public VelocityServerPoller(VelocityConnect plugin, ProxyServer proxyServer, JedisPool jedisPool, long refreshRateMs) {
-        super(jedisPool, refreshRateMs);
+    public VelocityServerHandler(VelocityConnect plugin, ProxyServer proxyServer) {
         this.plugin = plugin;
         this.proxyServer = proxyServer;
     }

@@ -8,6 +8,5 @@ public interface ServerDataHandler {
 
     void onServerUpdate(ServerData oldData, ServerData newData);
     void onServerExpire(String serverName, ServerData lastKnownData);
-    Map<String, ServerData> getServerData();
 
 }

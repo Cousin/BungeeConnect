@@ -2,15 +2,16 @@ package net.blancodev.bungeeconnect.common;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import com.github.benmanes.caffeine.cache.RemovalCause;
 import com.github.benmanes.caffeine.cache.Scheduler;
 import lombok.Getter;
-import lombok.Setter;
 import net.blancodev.bungeeconnect.common.data.ServerData;
 import net.blancodev.bungeeconnect.common.util.GsonHelper;
 import redis.clients.jedis.JedisPubSub;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -29,11 +30,6 @@ public class ServerDataPubSub extends JedisPubSub {
         @Override
         public void onServerExpire(String serverName, ServerData lastKnownData) {
 
-        }
-
-        @Override
-        public Map<String, ServerData> getServerData() {
-            return serverDataMap;
         }
     }));
 
