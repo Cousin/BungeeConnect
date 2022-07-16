@@ -2,8 +2,10 @@ package net.blancodev.bungeeconnect.bungee;
 
 import lombok.Getter;
 import net.blancodev.bungeeconnect.common.BungeeConnectCommon;
+import net.blancodev.bungeeconnect.common.ServerDataPubSub;
 import net.blancodev.bungeeconnect.common.config.ConfigurableModule;
 import net.md_5.bungee.api.plugin.Plugin;
+import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
 import java.io.File;
@@ -14,7 +16,9 @@ public class BungeeConnect extends Plugin implements ConfigurableModule<BungeeCo
 
     private BungeeConnectConfig bungeeConnectConfig;
     private JedisPool jedisPool;
-    private BungeeServerPoller bungeeServerPoller;
+    private BungeeServerHandler bungeeServerHandler;
+
+    private ServerDataPubSub serverDataPubSub;
 
     @Override
     public void onEnable() {
@@ -28,8 +32,12 @@ public class BungeeConnect extends Plugin implements ConfigurableModule<BungeeCo
 
         this.jedisPool = BungeeConnectCommon.createJedisPool(bungeeConnectConfig);
 
-        this.bungeeServerPoller = new BungeeServerPoller(getProxy(), jedisPool, bungeeConnectConfig.getPollRefreshRate());
-        this.bungeeServerPoller.start();
+        try (Jedis jedis = this.jedisPool.getResource()) {
+            this.serverDataPubSub = BungeeConnectCommon.initPubSub(jedis);
+        }
+
+        this.serverDataPubSub.getServerDataHandlers().clear(); // clear basic handler
+        this.serverDataPubSub.getServerDataHandlers().add(new BungeeServerHandler(this));
     }
 
     @Override

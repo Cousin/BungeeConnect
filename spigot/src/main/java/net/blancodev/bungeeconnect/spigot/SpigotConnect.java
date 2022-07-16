@@ -109,6 +109,8 @@ public final class SpigotConnect extends JavaPlugin implements ConfigurableModul
                     getServer().hasWhitelist() ? getServer().getWhitelistedPlayers().stream().map(OfflinePlayer::getUniqueId).collect(Collectors.toSet()) : Collections.emptySet()
                 );
 
+
+
                 try (Jedis jedis = jedisPool.getResource()) {
                     jedis.set(BungeeConnectCommon.SERVER_DATA_KEY + getServerName(), GsonHelper.GSON.toJson(serverData));
                     jedis.expire(BungeeConnectCommon.SERVER_DATA_KEY + getServerName(), 5);
