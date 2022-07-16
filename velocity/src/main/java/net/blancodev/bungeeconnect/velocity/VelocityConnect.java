@@ -8,7 +8,9 @@ import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
 import lombok.Getter;
 import net.blancodev.bungeeconnect.common.BungeeConnectCommon;
+import net.blancodev.bungeeconnect.common.ServerDataPubSub;
 import net.blancodev.bungeeconnect.common.config.ConfigurableModule;
+import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
 import java.io.File;
@@ -24,7 +26,7 @@ public class VelocityConnect implements ConfigurableModule<VelocityConnectConfig
     private VelocityConnectConfig velocityConnectConfig;
     private JedisPool jedisPool;
 
-    private VelocityServerPoller velocityServerPoller;
+    private final ServerDataPubSub serverDataPubSub = BungeeConnectCommon.getServerDataPubSub();
 
     private final ProxyServer server;
     private final Logger logger;
@@ -52,8 +54,14 @@ public class VelocityConnect implements ConfigurableModule<VelocityConnectConfig
 
     @Subscribe
     public void onProxyInit(ProxyInitializeEvent event) {
-        this.velocityServerPoller = new VelocityServerPoller(this, server, jedisPool, velocityConnectConfig.getPollRefreshRate());
-        this.velocityServerPoller.start();
+        getServer().getScheduler().buildTask(this, () -> {
+            try (Jedis jedis = jedisPool.getResource()) {
+                BungeeConnectCommon.initPubSub(jedis);
+            }
+        }).schedule();
+
+        BungeeConnectCommon.getServerDataPubSub().getServerDataHandlers().clear();
+        BungeeConnectCommon.getServerDataPubSub().getServerDataHandlers().add(new VelocityServerHandler(this, server));
     }
 
     @Override

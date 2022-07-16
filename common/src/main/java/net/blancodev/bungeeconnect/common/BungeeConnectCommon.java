@@ -1,5 +1,6 @@
 package net.blancodev.bungeeconnect.common;
 
+import lombok.Getter;
 import net.blancodev.bungeeconnect.common.config.ConfigurableModule;
 import net.blancodev.bungeeconnect.common.config.RedisConnectionConfig;
 import net.blancodev.bungeeconnect.common.util.GsonHelper;
@@ -13,7 +14,14 @@ import java.nio.file.Files;
 
 public class BungeeConnectCommon {
 
-    public static final String SERVER_DATA_KEY = "bungeeConnectServerData.";
+    public static final String PUBSUB_CHANNEL = "bungeeConnectServerData";
+
+    @Getter
+    private static final ServerDataPubSub serverDataPubSub = new ServerDataPubSub();
+
+    public static void initPubSub(Jedis jedis) {
+        jedis.subscribe(serverDataPubSub, PUBSUB_CHANNEL);
+    }
 
     public static JedisPool createJedisPool(RedisConnectionConfig coreConfig) {
         final JedisPoolConfig config = new JedisPoolConfig();

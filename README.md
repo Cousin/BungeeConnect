@@ -14,7 +14,7 @@ if (bungeeConnect == null) {
     return;
 }
 
-Map<String, ServerData> serverData = bungeeConnect.getBungeeServerPoller().getServerDataMap();
+Map<String, ServerData> serverData = bungeeConnect.getBungeeServerPoller().getServerDataCache();
 System.out.println("Lobby Server Online: " + serverData.get("lobby").getPlayers())
 ```
 
@@ -27,6 +27,6 @@ if (spigotConnect == null) {
     return;
 }
 
-Map<String, ServerData> serverData = spigotConnect.getServerPoller().getServerDataMap();
+Map<String, ServerData> serverData = spigotConnect.getServerPoller().getServerDataCache();
 System.out.println("Lobby Server Online: " + serverData.get("lobby").getPlayers())
 ```

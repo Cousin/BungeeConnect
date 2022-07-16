@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.2</version>
     <artifactId>bungeeconnect-common</artifactId>
 
     <properties>
@@ -27,6 +27,11 @@
             <groupId>redis.clients</groupId>
             <artifactId>jedis</artifactId>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 
