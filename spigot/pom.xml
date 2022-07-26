@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <version>1.3</version>
-    <artifactId>bungeeconnect-bungee</artifactId>
+    <artifactId>bungeeconnect-spigot</artifactId>
 
     <properties>
         <maven.compiler.source>16</maven.compiler.source>
@@ -18,7 +18,7 @@
     </properties>
 
     <build>
-        <finalName>BungeeConnect</finalName>
+        <finalName>SpigotConnect</finalName>
         <sourceDirectory>src/main/java/</sourceDirectory>
         <resources>
             <resource>
@@ -40,14 +40,24 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>net.md-5</groupId>
-            <artifactId>bungeecord-api</artifactId>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>redis.clients</groupId>
             <artifactId>jedis</artifactId>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
