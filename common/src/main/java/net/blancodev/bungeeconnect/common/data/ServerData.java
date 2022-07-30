@@ -28,4 +28,8 @@ public class ServerData {
     private boolean whitelisted;
     private Set<UUID> whitelistedUuids;
 
+    public boolean isFull() {
+        return players >= maxPlayers;
+    }
+
 }
