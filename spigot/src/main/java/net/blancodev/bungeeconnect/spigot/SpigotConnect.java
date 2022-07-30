@@ -11,7 +11,8 @@ import net.blancodev.bungeeconnect.common.data.ServerData;
 import net.blancodev.bungeeconnect.common.util.GsonHelper;
 import net.blancodev.bungeeconnect.spigot.playerdata.PlayerDataCreator;
 import net.blancodev.bungeeconnect.spigot.playerdata.SpigotPlayerDataCreator;
-import org.bukkit.OfflinePlayer;
+import net.blancodev.bungeeconnect.spigot.serverdata.ServerDataCreator;
+import net.blancodev.bungeeconnect.spigot.serverdata.SpigotServerDataCreator;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -26,10 +27,8 @@ import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Getter
 public final class SpigotConnect extends JavaPlugin implements ConfigurableModule<SpigotConnectConfig> {
@@ -46,6 +45,9 @@ public final class SpigotConnect extends JavaPlugin implements ConfigurableModul
 
     @Setter
     private PlayerDataCreator playerDataCreator = new SpigotPlayerDataCreator();
+
+    @Setter
+    private ServerDataCreator serverDataCreator = new SpigotServerDataCreator();
 
     private final ServerDataPubSub serverDataPubSub = BungeeConnectCommon.getServerDataPubSub();
 
@@ -100,18 +102,7 @@ public final class SpigotConnect extends JavaPlugin implements ConfigurableModul
         new BukkitRunnable() {
             @Override
             public void run() {
-                final ServerData serverData = new ServerData(
-                    detectedHostname,
-                    getSpigotConnectConfig().getIp(),
-                    port,
-                    getServerName(),
-                    getSpigotConnectConfig().getMotd(),
-                    getSpigotConnectConfig().isRestricted(),
-                    getServer().getOnlinePlayers().size(),
-                    getServer().getMaxPlayers(),
-                    getServer().hasWhitelist(),
-                    getServer().hasWhitelist() ? getServer().getWhitelistedPlayers().stream().map(OfflinePlayer::getUniqueId).collect(Collectors.toSet()) : Collections.emptySet()
-                );
+                ServerData serverData = serverDataCreator.createServerData(SpigotConnect.this, getServer());
 
                 try (Jedis jedis = jedisPool.getResource()) {
                     jedis.publish(BungeeConnectCommon.PUBSUB_CHANNEL, GsonHelper.GSON.toJson(serverData));
