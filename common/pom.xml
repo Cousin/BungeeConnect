@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <version>1.3.1</version>
+    <version>1.4</version>
     <artifactId>bungeeconnect-common</artifactId>
 
     <properties>
