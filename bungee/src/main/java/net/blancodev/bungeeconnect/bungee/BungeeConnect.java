@@ -12,7 +12,7 @@ import java.io.File;
 import java.io.IOException;
 
 @Getter
-public class BungeeConnect extends Plugin implements ConfigurableModule<BungeeConnectConfig> {
+public class BungeeConnect extends Plugin implements ConfigurableModule {
 
     private BungeeConnectConfig bungeeConnectConfig;
     private JedisPool jedisPool;
@@ -22,7 +22,7 @@ public class BungeeConnect extends Plugin implements ConfigurableModule<BungeeCo
     @Override
     public void onEnable() {
         try {
-            this.bungeeConnectConfig = BungeeConnectCommon.loadConfig(this, BungeeConnectConfig.class);
+            this.bungeeConnectConfig = BungeeConnectCommon.loadConfig(this, "config", BungeeConnectConfig.class);
         } catch (IOException | InstantiationException | IllegalAccessException exception) {
             exception.printStackTrace();
             getProxy().stop();

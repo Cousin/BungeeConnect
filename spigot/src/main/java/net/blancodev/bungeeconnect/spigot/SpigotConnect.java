@@ -31,10 +31,11 @@ import java.util.List;
 import java.util.UUID;
 
 @Getter
-public final class SpigotConnect extends JavaPlugin implements ConfigurableModule<SpigotConnectConfig> {
+public final class SpigotConnect extends JavaPlugin implements ConfigurableModule {
 
     private JedisPool jedisPool;
     private SpigotConnectConfig spigotConnectConfig;
+    private SpigotConnectServerConfig spigotConnectServerConfig;
 
     private String serverName;
     private String detectedHostname;
@@ -54,7 +55,8 @@ public final class SpigotConnect extends JavaPlugin implements ConfigurableModul
     @Override
     public void onEnable() {
         try {
-            this.spigotConnectConfig = BungeeConnectCommon.loadConfig(this, SpigotConnectConfig.class);
+            this.spigotConnectConfig = BungeeConnectCommon.loadConfig(this, "config", SpigotConnectConfig.class);
+            this.spigotConnectServerConfig = BungeeConnectCommon.loadConfig(this, "server", SpigotConnectServerConfig.class);
         } catch (IOException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
             getServer().shutdown();
@@ -72,7 +74,7 @@ public final class SpigotConnect extends JavaPlugin implements ConfigurableModul
             return;
         }
 
-        this.serverName = spigotConnectConfig.getServerName()
+        this.serverName = spigotConnectServerConfig.getServerName()
                 .replace("%uuid%", UUID.randomUUID().toString().split("-")[0])
                 .replace("%hostname%", detectedHostname);
 

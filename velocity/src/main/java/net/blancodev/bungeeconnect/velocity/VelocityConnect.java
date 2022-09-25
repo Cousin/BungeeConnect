@@ -21,7 +21,7 @@ import java.util.logging.Logger;
 @Getter
 @Plugin(id = "velocityconnect", name = "VelocityConnect", version = "1.0.0-SNAPSHOT",
         url = "https://github.com/Cousin/BungeeConnect", description = "Velocity module for BungeeConnect", authors = { "Executive" })
-public class VelocityConnect implements ConfigurableModule<VelocityConnectConfig> {
+public class VelocityConnect implements ConfigurableModule {
 
     private VelocityConnectConfig velocityConnectConfig;
     private JedisPool jedisPool;
@@ -40,7 +40,7 @@ public class VelocityConnect implements ConfigurableModule<VelocityConnectConfig
         this.dataDirectory = dataDirectory;
 
         try {
-            this.velocityConnectConfig = BungeeConnectCommon.loadConfig(this, VelocityConnectConfig.class);
+            this.velocityConnectConfig = BungeeConnectCommon.loadConfig(this, "config", VelocityConnectConfig.class);
         } catch (IOException | InstantiationException | IllegalAccessException exception) {
             exception.printStackTrace();
             server.shutdown();

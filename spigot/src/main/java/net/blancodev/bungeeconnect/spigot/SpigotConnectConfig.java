@@ -10,12 +10,9 @@ public class SpigotConnectConfig implements RedisConnectionConfig {
     private String redisPassword = "password";
     private int redisPort = 6379;
 
-    private long refreshRateMs = 1000L;
-
-    private String serverName = "mc%uuid%";
-    private String ip = "127.0.0.1";
     private String serverHostname = "%detect%";
-    private String motd = "My BungeeConnect Server";
-    private boolean restricted = false;
+    private String ip = "127.0.0.1";
+
+    private long refreshRateMs = 1000L;
 
 }
