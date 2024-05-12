@@ -5,6 +5,7 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.RemovalListener;
 import com.github.benmanes.caffeine.cache.Scheduler;
 import lombok.Getter;
+import lombok.Setter;
 import net.blancodev.bungeeconnect.common.data.ServerData;
 import net.blancodev.bungeeconnect.common.util.GsonHelper;
 import redis.clients.jedis.JedisPubSub;
@@ -19,6 +20,9 @@ public class ServerDataPubSub extends JedisPubSub {
     @Getter
     private final Set<ServerDataHandler> serverDataHandlers = new HashSet<>();
 
+    @Setter
+    private Class<? extends ServerData> serverDataClass = ServerData.class;
+
     @Getter
     private final Cache<String, ServerData> serverDataCache = Caffeine.newBuilder()
             .scheduler(Scheduler.systemScheduler())
@@ -32,7 +36,7 @@ public class ServerDataPubSub extends JedisPubSub {
 
     @Override
     public final void onMessage(String channel, String message) {
-        ServerData serverData = GsonHelper.GSON.fromJson(message, ServerData.class);
+        ServerData serverData = GsonHelper.GSON.fromJson(message, serverDataClass);
         serverDataHandlers.forEach(h -> h.onServerUpdate(serverDataCache.getIfPresent(serverData.getServerName()), serverData));
         serverDataCache.put(serverData.getServerName(), serverData);
     }

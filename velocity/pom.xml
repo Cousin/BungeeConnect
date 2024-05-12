@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <version>1.3</version>
+    <version>1.6</version>
     <artifactId>bungeeconnect-velocity</artifactId>
 
     <properties>
@@ -36,7 +36,7 @@
         <dependency>
             <groupId>net.blancodev</groupId>
             <artifactId>bungeeconnect-common</artifactId>
-            <version>1.3</version>
+            <version>1.6</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

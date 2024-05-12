@@ -11,7 +11,8 @@ import net.blancodev.bungeeconnect.common.data.ServerData;
 import net.blancodev.bungeeconnect.common.util.GsonHelper;
 import net.blancodev.bungeeconnect.spigot.playerdata.PlayerDataCreator;
 import net.blancodev.bungeeconnect.spigot.playerdata.SpigotPlayerDataCreator;
-import org.bukkit.OfflinePlayer;
+import net.blancodev.bungeeconnect.spigot.serverdata.ServerDataCreator;
+import net.blancodev.bungeeconnect.spigot.serverdata.SpigotServerDataCreator;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -22,37 +23,41 @@ import redis.clients.jedis.JedisPool;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Getter
-public final class SpigotConnect extends JavaPlugin implements ConfigurableModule<SpigotConnectConfig> {
+public final class SpigotConnect extends JavaPlugin implements ConfigurableModule {
 
     private JedisPool jedisPool;
     private SpigotConnectConfig spigotConnectConfig;
+    private SpigotConnectServerConfig spigotConnectServerConfig;
 
     private String serverName;
     private String detectedHostname;
-
-    private Protocol protocol;
 
     private int port;
 
     @Setter
     private PlayerDataCreator playerDataCreator = new SpigotPlayerDataCreator();
 
+    @Setter
+    private ServerDataCreator serverDataCreator = new SpigotServerDataCreator();
+
     private final ServerDataPubSub serverDataPubSub = BungeeConnectCommon.getServerDataPubSub();
 
     @Override
     public void onEnable() {
         try {
-            this.spigotConnectConfig = BungeeConnectCommon.loadConfig(this, SpigotConnectConfig.class);
+            this.spigotConnectConfig = BungeeConnectCommon.loadConfig(this, "config", SpigotConnectConfig.class);
+            this.spigotConnectServerConfig = BungeeConnectCommon.loadConfig(this, "server", SpigotConnectServerConfig.class);
         } catch (IOException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
             getServer().shutdown();
@@ -70,14 +75,12 @@ public final class SpigotConnect extends JavaPlugin implements ConfigurableModul
             return;
         }
 
-        this.serverName = spigotConnectConfig.getServerName()
+        this.serverName = spigotConnectServerConfig.getServerName()
                 .replace("%uuid%", UUID.randomUUID().toString().split("-")[0])
                 .replace("%hostname%", detectedHostname);
 
-        this.protocol = detectProtocol();
-
         try {
-            this.port = injectAndFindPort(getServer());
+            this.port = getCommonPort();
         } catch (Exception e) {
             e.printStackTrace();
             getServer().shutdown();
@@ -100,18 +103,7 @@ public final class SpigotConnect extends JavaPlugin implements ConfigurableModul
         new BukkitRunnable() {
             @Override
             public void run() {
-                final ServerData serverData = new ServerData(
-                    detectedHostname,
-                    getSpigotConnectConfig().getIp(),
-                    port,
-                    getServerName(),
-                    getSpigotConnectConfig().getMotd(),
-                    getSpigotConnectConfig().isRestricted(),
-                    getServer().getOnlinePlayers().size(),
-                    getServer().getMaxPlayers(),
-                    getServer().hasWhitelist(),
-                    getServer().hasWhitelist() ? getServer().getWhitelistedPlayers().stream().map(OfflinePlayer::getUniqueId).collect(Collectors.toSet()) : Collections.emptySet()
-                );
+                ServerData serverData = serverDataCreator.createServerData(SpigotConnect.this, getServer());
 
                 try (Jedis jedis = jedisPool.getResource()) {
                     jedis.publish(BungeeConnectCommon.PUBSUB_CHANNEL, GsonHelper.GSON.toJson(serverData));
@@ -138,43 +130,38 @@ public final class SpigotConnect extends JavaPlugin implements ConfigurableModul
         return getDataFolder();
     }
 
-    private Protocol detectProtocol() {
-        String version = super.getServer().getClass().getPackage().getName().replace(".",  ",").split(",")[3];
-        for (Protocol protocol : Protocol.values()) {
-            if (protocol.name().equals(version.toUpperCase())) {
-                getLogger().info("Detected protocol version as " + protocol.name());
-                return protocol;
-            }
-        }
+    // Modified version from https://github.com/WesJD/Bukkit-Connect/blob/master/src/main/java/lilypad/bukkit/connect/ConnectPlugin.java
+    private int getCommonPort() {
+        try {
+            final Object minecraftServer =
+                    super.getServer().getClass().getMethod("getServer").invoke(super.getServer());
 
-        return null;
-    }
+            final Object serverConnection = Arrays.stream(minecraftServer.getClass().getMethods())
+                    .filter(method -> method.getReturnType().getSimpleName().equals("ServerConnection"))
+                    .findFirst().orElseThrow(() -> new IllegalStateException("Unable to find ServerConnection"))
+                    .invoke(minecraftServer);
 
-    /*
-        Method for finding the true port of the server, useful for when utilizing port 0
-        Derived from Lilypads Bukkit-Connect
-     */
-    private int injectAndFindPort(Server server) throws Exception {
-        Method serverGetHandle = server.getClass().getDeclaredMethod("getServer");
-        Object minecraftServer = serverGetHandle.invoke(server);
-        // Get Server Connection
-        Method serverConnectionMethod = null;
-        for(Method method : minecraftServer.getClass().getSuperclass().getDeclaredMethods()) {
-            if(!method.getReturnType().getSimpleName().equals("ServerConnection")) {
-                continue;
-            }
-            serverConnectionMethod = method;
-            break;
+            return Arrays.stream(serverConnection.getClass().getDeclaredFields())
+                    .filter(field -> field.getType().equals(List.class))
+                    .peek(field -> field.setAccessible(true))
+                    .map(field -> {
+                        try {
+                            return (List) field.get(serverConnection);
+                        } catch (IllegalAccessException exception) {
+                            System.err.println("Failed to get list from ServerConnection field \"" + field.getName() + "\", " +
+                                    "defaulting to empty list");
+                            exception.printStackTrace();
+                            return Collections.emptyList();
+                        }
+                    })
+                    .filter(list -> !list.isEmpty() && ChannelFuture.class.isAssignableFrom(list.get(0).getClass()))
+                    .map(list -> (ChannelFuture) list.get(0))
+                    .map(channelFuture -> ((InetSocketAddress) channelFuture.channel().localAddress()).getPort())
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalStateException("Failed to find common port"));
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException exception) {
+            throw new IllegalStateException("Failed to resolve channelFuture list", exception);
         }
-        Object serverConnection = serverConnectionMethod.invoke(minecraftServer);
-        // Get ChannelFuture List
-        List<ChannelFuture> channelFutureList = getPrivateField(serverConnection.getClass(), serverConnection, protocol.getChannelFuturesField());
-        // Iterate ChannelFutures
-        int commonPort = 0;
-        for(ChannelFuture channelFuture : channelFutureList) {
-            commonPort = ((InetSocketAddress) channelFuture.channel().localAddress()).getPort();
-        }
-        return commonPort;
     }
 
     private <T> T getPrivateField(Class<?> objectClass, Object object, String fieldName) throws NoSuchFieldException, IllegalAccessException {
