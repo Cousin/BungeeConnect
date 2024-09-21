@@ -18,6 +18,10 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.logging.Logger;
 
+/**
+ * Main class for the Velocity plugin
+ * The VelocityConnect plugin will listen for server updates, and automatically register them into the proxy
+ */
 @Getter
 @Plugin(id = "velocityconnect", name = "VelocityConnect", version = "1.0.0-SNAPSHOT",
         url = "https://github.com/Cousin/BungeeConnect", description = "Velocity module for BungeeConnect", authors = { "Executive" })
@@ -52,14 +56,19 @@ public class VelocityConnect implements ConfigurableModule {
         logger.info("VelocityConnect enabled");
     }
 
+    /**
+     * Subscribe to the ProxyInitializeEvent
+     */
     @Subscribe
     public void onProxyInit(ProxyInitializeEvent event) {
+        // Initialize the PubSub
         getServer().getScheduler().buildTask(this, () -> {
             try (Jedis jedis = jedisPool.getResource()) {
                 BungeeConnectCommon.initPubSub(jedis);
             }
         }).schedule();
 
+        // Register the server data handler
         BungeeConnectCommon.getServerDataPubSub().getServerDataHandlers().add(new VelocityServerHandler(this, server));
     }
 

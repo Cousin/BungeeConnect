@@ -3,6 +3,9 @@ package net.blancodev.bungeeconnect.velocity;
 import lombok.Getter;
 import net.blancodev.bungeeconnect.common.config.RedisConnectionConfig;
 
+/**
+ * Configuration for the Velocity Connect plugin
+ */
 @Getter
 public class VelocityConnectConfig implements RedisConnectionConfig {
 

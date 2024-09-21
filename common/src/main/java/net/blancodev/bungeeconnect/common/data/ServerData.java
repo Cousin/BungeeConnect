@@ -7,6 +7,9 @@ import lombok.Getter;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * Basic server data object to be passed around
+ */
 @Getter
 @AllArgsConstructor
 @EqualsAndHashCode(of = { "ip", "port", "motd", "restricted" })

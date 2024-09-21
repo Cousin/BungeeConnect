@@ -11,6 +11,10 @@ import redis.clients.jedis.JedisPool;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * Main class for the BungeeConnect plugin
+ * The BungeeConnect plugin will listen for server updates, and automatically register them into the proxy
+ */
 @Getter
 public class BungeeConnect extends Plugin implements ConfigurableModule {
 
@@ -31,12 +35,14 @@ public class BungeeConnect extends Plugin implements ConfigurableModule {
 
         this.jedisPool = BungeeConnectCommon.createJedisPool(bungeeConnectConfig);
 
+        // Initialize the pubsub
         getProxy().getScheduler().runAsync(this, () -> {
             try (Jedis jedis = this.jedisPool.getResource()) {
                 BungeeConnectCommon.initPubSub(jedis);
             }
         });
 
+        // Register the server handler
         BungeeConnectCommon.getServerDataPubSub().getServerDataHandlers().add(new BungeeServerHandler(this));
     }
 

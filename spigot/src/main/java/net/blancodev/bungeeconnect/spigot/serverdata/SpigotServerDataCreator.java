@@ -8,6 +8,9 @@ import org.bukkit.Server;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
+/**
+ * Default implementation of {@link ServerDataCreator}
+ */
 public class SpigotServerDataCreator implements ServerDataCreator {
 
     @Override

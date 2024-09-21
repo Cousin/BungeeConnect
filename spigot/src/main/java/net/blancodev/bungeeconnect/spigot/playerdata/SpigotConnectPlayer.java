@@ -6,6 +6,9 @@ import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
+/**
+ * Default implementation of the {@link ConnectPlayer}
+*/
 @RequiredArgsConstructor
 public class SpigotConnectPlayer implements ConnectPlayer {
 

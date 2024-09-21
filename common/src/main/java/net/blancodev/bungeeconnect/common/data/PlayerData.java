@@ -5,6 +5,9 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.UUID;
 
+/**
+ * Default player data object to be passed around
+ */
 @Getter
 @RequiredArgsConstructor
 public class PlayerData {

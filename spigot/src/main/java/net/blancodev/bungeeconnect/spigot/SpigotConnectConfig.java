@@ -3,6 +3,9 @@ package net.blancodev.bungeeconnect.spigot;
 import lombok.Getter;
 import net.blancodev.bungeeconnect.common.config.RedisConnectionConfig;
 
+/**
+ * Configuration for the Spigot Connect plugin
+ */
 @Getter
 public class SpigotConnectConfig implements RedisConnectionConfig {
 
