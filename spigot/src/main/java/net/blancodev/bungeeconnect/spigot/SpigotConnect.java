@@ -169,7 +169,7 @@ public final class SpigotConnect extends JavaPlugin implements ConfigurableModul
                     super.getServer().getClass().getMethod("getServer").invoke(super.getServer());
 
             final Object serverConnection = Arrays.stream(minecraftServer.getClass().getMethods())
-                    .filter(method -> method.getReturnType().getSimpleName().equals("ServerConnection"))
+                    .filter(method -> method.getReturnType().getSimpleName().equals("ServerConnectionListener"))
                     .findFirst().orElseThrow(() -> new IllegalStateException("Unable to find ServerConnection"))
                     .invoke(minecraftServer);
 
